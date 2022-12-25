@@ -6,12 +6,7 @@ from bd_vkinder import *
 session = vk_api.VkApi(token=user_token)
 vk = session.get_api()
 
-# def set_user_status():
-#     vk.status.set(text="123")
-#
-# def get_friends(user_id):
-#     friends = session.method("friends.get", {"user_id" : user_id})
-#     print(friends)
+
 def write_msg(user_id, message):
     msg = session.method("messages.send",{"user_id" : user_id, 'message': message,'random_id': randrange(10 ** 7) })
 
