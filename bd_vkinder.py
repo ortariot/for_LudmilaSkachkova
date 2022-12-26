@@ -11,89 +11,81 @@ connection = psycopg2.connect(
 connection.autocommit = True
 
 
-def create_table_users():
-    """СОЗДАНИЕ ТАБЛИЦЫ USERS (НАЙДЕННЫЕ ПОЛЬЗОВАТЕЛИ"""
+def create_table_applicant():
+
     with connection.cursor() as cursor:
         cursor.execute(
-            """CREATE TABLE IF NOT EXISTS users (
-                id serial,
-                first_name varchar(50) NOT NULL,
-                last_name varchar(25) NOT NULL,
-                vk_id varchar(20) NOT NULL PRIMARY KEY,
-                vk_link varchar(50));"""
+            """CREATE TABLE IF NOT EXISTS applicant (
+                id_applicant SERIAL PRIMARY KEY,
+                vk_id_applicant varchar(20) NOT null);
+                """
         )
-    print("[INFO] Table USERS was created.")
+    print("[INFO] Table  was created.")
 
 
-def create_table_seen_users():  # references users(vk_id)
-    """СОЗДАНИЕ ТАБЛИЦЫ SEEN_USERS (ПРОСМОТРЕННЫЕ ПОЛЬЗОВАТЕЛИ"""
+def create_table_seen_users():
+
     with connection.cursor() as cursor:
         cursor.execute(
             """CREATE TABLE IF NOT EXISTS seen_users(
-            id serial,
-            vk_id varchar(50) PRIMARY KEY);"""
+            id_seen_users serial PRIMARY KEY,
+            applicant_id INTEGER references applicant (id_applicant),
+            vk_id_seen_users varchar(20) NOT null);"""
         )
-    print("[INFO] Table SEEN_USERS was created.")
+    print("[INFO] Table was created.")
 
 
-def insert_data_users(first_name, last_name, vk_id, vk_link):
-    """ВСТАВКА ДАННЫХ В ТАБЛИЦУ USERS"""
+def insert_data_users(vk_id):
+
     with connection.cursor() as cursor:
         cursor.execute(
-            f"""INSERT INTO users (first_name, last_name, vk_id, vk_link) 
-            VALUES ('{first_name}', '{last_name}', '{vk_id}', '{vk_link}');"""
+            """INSERT INTO applicant (vk_id_applicant)  
+            VALUES ( '{vk_id}');"""
         )
 
 
-def insert_data_seen_users(vk_id, offset):
-    """ВСТАВКА ДАННЫХ В ТАБЛИЦУ SEEN_USERS"""
+def insert_data_seen_users(vk_id_seen_users, applicant_id,  offset):
+
     with connection.cursor() as cursor:
         cursor.execute(
-            f"""INSERT INTO seen_users (vk_id) 
-            VALUES ('{vk_id}')
+            """INSERT INTO seen_users (vk_id_seen_users, applicant_id,) 
+            VALUES ('{vk_id_seen_users}', '{applicant_id}')
             OFFSET '{offset}';"""
         )
 
 
 def select(offset):
-    """ВЫБОРКА ИЗ НЕПРОСМОТРЕННЫХ ЛЮДЕЙ"""
+
     with connection.cursor() as cursor:
         cursor.execute(
-            f"""SELECT u.first_name,
-                        u.last_name,
-                        u.vk_id,
-                        u.vk_link,
-                        su.vk_id
-                        FROM users
-                        JOIN seen_users AS su
-                        ON u.vk_id = su.vk_id
-                        WHERE su.vk_id IS NULL
-                        OFFSET '{offset}';"""
+            """select id_applicant from applicant a
+                        JOIN seen_users su
+                        ON a.id_applicant = su.applicant_id
+                        WHERE su.applicant_id IS NULL;"""
         )
         return cursor.fetchone()
 
 
-def drop_users():
-    """УДАЛЕНИЕ ТАБЛИЦЫ USERS КАСКАДОМ"""
+def drop_applicant():
+
     with connection.cursor() as cursor:
         cursor.execute(
-            """DROP TABLE IF EXISTS users CASCADE;"""
+            """DROP TABLE IF EXISTS applicant CASCADE;"""
         )
-        print('[INFO] Table USERS was deleted.')
+        print('[INFO] Table was deleted.')
 
 
 def drop_seen_users():
-    """УДАЛЕНИЕ ТАБЛИЦЫ SEEN_USERS КАСКАДОМ"""
+
     with connection.cursor() as cursor:
         cursor.execute(
             """DROP TABLE  IF EXISTS seen_users CASCADE;"""
         )
-        print('[INFO] Table SEEN_USERS was deleted.')
+        print('[INFO] Table  was deleted.')
 
 
 def creating_database():
-    drop_users()
+    drop_applicant()
     drop_seen_users()
-    create_table_users()
+    create_table_applicant()
 
-creating_database
