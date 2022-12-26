@@ -1,8 +1,9 @@
 import vk_api
-from config import user_token, comm_token
+from config import user_token, comm_token, offset, line
 import datetime
 from random import randrange
 from bd_vkinder import *
+
 session = vk_api.VkApi(token=user_token)
 vk = session.get_api()
 
@@ -156,6 +157,25 @@ def get_photo_3(user_id):
         if count == 3:
             return i[1]
 
+
+def person_id(offset):
+    tuple_person = select(offset)
+    list_person = []
+    for i in tuple_person:
+        list_person.append(i)
+    return str(list_person[2])
+
+
+def found_person_info(offset):
+    tuple_person = select(offset)
+    list_person = []
+    for i in tuple_person:
+        list_person.append(i)
+    return f'{list_person[0]} {list_person[1]} {list_person[3]}'
+
+
+
+
 def send_photo_1(user_id, message, offset):
     msg = session.method("messages.send",{ 'user_id': user_id,
                                            'access_token': user_token,
@@ -176,39 +196,26 @@ def send_photo_3(user_id, message, offset):
                                            'message': message,
                                            'attachment': f'photo{person_id(offset)}_{get_photo_3(person_id(offset))}',
                                            'random_id': 0})
-    print(msg)
+
 
 
 def find_persons(user_id, offset):
     write_msg(user_id, found_person_info(offset))
     person_id(offset)
-    insert_data_seen_users(person_id(offset), offset)  # offset
+    insert_data_seen_users(person_id(offset), offset)
     get_photos_id(person_id(offset))
-    send_photo_1(user_id, 'Фото номер 1', offset)
+    send_photo_1(user_id, 'Фото 1', offset)
     if get_photo_2(person_id(offset)) != None:
-        send_photo_2(user_id, 'Фото номер 2', offset)
-        send_photo_3(user_id, 'Фото номер 3', offset)
+        send_photo_2(user_id, 'Фото 2', offset)
+        send_photo_3(user_id, 'Фото 3', offset)
     else:
-        write_msg(user_id, f'Больше фотографий нет')
-
-def found_person_info(offset):
-    tuple_person = select(offset)
-    list_person = []
-    for i in tuple_person:
-        list_person.append(i)
-    return f'{list_person[0]} {list_person[1]}, ссылка - {list_person[3]}'
-
-
-def person_id(offset):
-    tuple_person = select(offset)
-    list_person = []
-    for i in tuple_person:
-        list_person.append(i)
-    return str(list_person[2])
+        write_msg(user_id, f'Больше нет фото')
 
 
 
 
-find_persons(68343, "1")
+
+
+
 
 
