@@ -13,16 +13,15 @@ def write_msg(user_id, message):
 
 def get_name(user_id):
     name = session.method("users.get",{"user_id" : user_id})
-    try:
-        for i in name:
-            first_name = i.get('first_name')
+    for i in name:
+        first_name = i.get('first_name')
         return first_name
-    except KeyError:
-        write_msg(user_id, 'Ошибка получения токена, введите токен в переменную - user_token')
+
+
 
 def get_sex(user_id):
     sex = session.method("users.get",{"user_id" : user_id, "fields" : "sex"})
-    if sex != 'None':
+    try:
         for i in sex:
             if i.get('sex') == 2:
                 find_sex = 1
@@ -30,18 +29,18 @@ def get_sex(user_id):
             elif i.get('sex') == 1:
                 find_sex = 2
                 return find_sex
-    else:
+    except AttributeError:
         write_msg(user_id, 'Бот не может определить вашу половую принадлежность, заполните профиль')
     
 
 def get_city(user_id):
     city = session.method("users.get",{"user_id" : user_id, "fields" : "city"})
-    if city != 'None':
+    try:
         for i in city:
             city = i.get('city')
             id_city = str(city.get('id'))
             return id_city
-    else:
+    except AttributeError:
         write_msg(user_id, 'Бот не может определить ваш город, заполните профиль')
 
 def search_users(sex, age_at, age_to, city_id):
