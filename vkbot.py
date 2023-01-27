@@ -83,12 +83,10 @@ def questionnaire_search(user_id):
                 write_msg(user_id, '1 - выбрать,  0 - пропустить, \nq - выход из поиска')
                 msg_text, user_id = loop_bot()
                 if msg_text == '0':
-                    insert_data_seen_users(result_id, user_id)
                     show_info()
 
                 elif msg_text == '1':
                     write_msg(user_id, f'\n{result_link}')
-                    insert_data_choice(result_id, user_id)
                     break
                 elif msg_text.lower() == 'q':
                     write_msg(user_id, 'Введите Vkinder для активации бота')
