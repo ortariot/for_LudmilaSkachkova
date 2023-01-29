@@ -2,7 +2,7 @@ from random import randrange
 import vk_api
 from vk_api.longpoll import VkLongPoll, VkEventType
 from config import user_token, comm_token, offset, line
-import requests
+import requests  
 import datetime
 from fun import *
 
@@ -23,6 +23,7 @@ def loop_bot():
                 message_text = event.text
                 return message_text, event.user_id
 
+
 def show_info():
     write_msg(user_id, f'Меню бота - Vkinder')
 
@@ -35,13 +36,16 @@ def menu_bot(id_num):
         f"Если вы уже зарегистрированы - начинайте поиск.\n")
 
 
-
 def reg_new_user(id_num):
     write_msg(id_num, 'Вы прошли регистрацию.')
     write_msg(id_num, f"Vkinder - для активации бота\n")
     check(user_id)
 
-def questionnaire_search(user_id):
+
+
+
+''' функция обработки лонгпула, нигде не вызывается '''
+def questionnaire_search():
     while True:
         msg_text, user_id = loop_bot()
         if msg_text == "vkinder":
@@ -52,6 +56,7 @@ def questionnaire_search(user_id):
                 reg_new_user(user_id)
             sex = get_sex(user_id)
             city = get_city(user_id)
+            '''возраст так же следует ситывать из профиля и самостоятельно определять диапазон поиска, например +/- 5  ktn'''
             write_msg(ids, 'Введите нижний порог возраста (min - 18).')
             age_at = msg_text
             if int(age_at) < 18:
@@ -91,7 +96,4 @@ def questionnaire_search(user_id):
                 elif msg_text.lower() == 'q':
                     write_msg(user_id, 'Введите Vkinder для активации бота')
                     break
-
-
-
 

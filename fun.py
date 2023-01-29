@@ -11,6 +11,11 @@ vk = session.get_api()
 def write_msg(user_id, message):
     msg = session.method("messages.send",{"user_id" : user_id, 'message': message,'random_id': randrange(10 ** 7) })
 
+
+'''get_name, get_sex, get_city  -  функции которые используют один метод, их нужно объеденить в одну просто
+   передавая "fields" : "sex,city," name получите автоматом можно в "fields" так же добавить bdate '''
+
+
 def get_name(user_id):
     name = session.method("users.get",{"user_id" : user_id})
     for i in name:
@@ -55,7 +60,8 @@ def search_users(sex, age_at, age_to, city_id):
                            'online': 1,
                            'city_id': get_city(user_id)
                            })
-
+    """здесь может быть ошибка получения данных от api. в response может не быть ключа 'items',
+    нужн опроверять что бы нужные вам данные возвращались от  api, эт онужно делать везде.  """
     for element in response['items']:
         person = [
             element['first_name'],
@@ -77,7 +83,10 @@ def get_photo(user_owner_id):
                               })
     except ApiError:
         return 'нет доступа к фото'
+
+    '''невероно стоит исключение не понятн окакую ошибку вы здесь ждёте '''
     users_photos = []
+    '''Почему range(10) ? ножно перебирать все элементы'''
     for i in range(10):
         try:
             users_photos.append(
@@ -107,6 +116,8 @@ def get_link(sex, age_at, age_to, city):
                            'online': 1,
                            'hometown': city
                            })
+     """здесь может быть ошибка получения данных от api. в response может не быть ключа 'items',
+    нужн опроверять что бы нужные вам данные возвращались от  api, эт онужно делать везде.  """                       
     list_1 = response['items']
     for person_dict in list_1:
         if person_dict.get('is_closed') == False:
